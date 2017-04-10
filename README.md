@@ -10,3 +10,7 @@ This is a Toast Utils test test test!!
 http://www.qingpingshan.com/rjbc/az/179250.html
 
 http://www.uu3aa.com/a/20747
+
+
+### 提交命令示例
+gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
