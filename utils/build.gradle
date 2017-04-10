@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+//apply plugin: 'com.novoda.bintray-release'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -20,38 +20,40 @@ android {
         }
     }
 
-    lintOptions {
-        abortOnError false
-    }
+//    lintOptions {
+//        abortOnError false
+//    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.2.0'
     testCompile 'junit:junit:4.12'
+    compile 'com.google.code.gson:gson:+'
+    compile 'com.android.support:design:25.2.0'
 }
 
-publish {
-    userOrg = 'ccg201216323'      //bintray注册的用户名
-    groupId = 'bruce.chang'         //compile引用时的第1部分groupId
-    artifactId = 'mylibrary'     //compile引用时的第2部分项目名
-    publishVersion = '1.0.0'    //compile引用时的第3部分版本号
-    desc = 'This is a ToastUtils test'
-    website = 'https://github.com/201216323/MyCommonUtils.git'
-}
+//publish {
+//    userOrg = 'ccg201216323'      //bintray注册的用户名
+//    groupId = 'bruce.chang'         //compile引用时的第1部分groupId
+//    artifactId = 'mylibrary'     //compile引用时的第2部分项目名
+//    publishVersion = '1.0.0'    //compile引用时的第3部分版本号
+//    desc = 'This is a ToastUtils test'
+//    website = 'https://github.com/201216323/MyCommonUtils.git'
+//}
 
-allprojects {
-    repositories {
-        jcenter()
-    }
-    //加上这些
-    tasks.withType(Javadoc) {
-        options{ encoding "UTF-8"
-            charSet 'UTF-8'
-            links "http://docs.oracle.com/javase/7/docs/api"
-        }
-    }
-}
+//allprojects {
+//    repositories {
+//        jcenter()
+//    }
+//    //加上这些
+//    tasks.withType(Javadoc) {
+//        options{ encoding "UTF-8"
+//            charSet 'UTF-8'
+//            links "http://docs.oracle.com/javase/7/docs/api"
+//        }
+//    }
+//}

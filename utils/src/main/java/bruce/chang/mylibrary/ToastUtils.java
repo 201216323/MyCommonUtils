@@ -1,6 +1,8 @@
 package bruce.chang.mylibrary;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -13,12 +15,19 @@ import android.widget.Toast;
 
 public class ToastUtils {
 
-
-    private static void showToastShort(Context context, String s) {
-        Toast.makeText(context, "This is a test for jcenter", Toast.LENGTH_SHORT).show();
+    public static void showToast(Context context, String content) {
+        Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
     }
 
-    private static void showToastLong(Context context, String s) {
-        Toast.makeText(context, "This is a test for jcenter", Toast.LENGTH_LONG).show();
+    public static void showToast(Context context, int res) {
+        Toast.makeText(context, res, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void showSnackbar(View view, String msg) {
+        Snackbar.make(view, msg, Snackbar.LENGTH_SHORT).show();
+    }
+
+    public static void showSnackbar(View view, int res) {
+        Snackbar.make(view, res, Snackbar.LENGTH_SHORT).show();
     }
 }
