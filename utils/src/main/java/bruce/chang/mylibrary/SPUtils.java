@@ -24,10 +24,9 @@ public class SPUtils {
 
     /**
      * 根据键字符串，存储一个字符串值
-     *
      * @param key
      * @param value
-     * @return 返回提交是否成功
+     * @return
      */
     public boolean putString(String key, String value) {
         editor.putString(key, value);
@@ -36,7 +35,6 @@ public class SPUtils {
 
     /**
      * 根据key值得到存储结果，如果没有找到value就返回null
-     *
      * @param key
      * @return
      */
@@ -58,7 +56,6 @@ public class SPUtils {
 
     /**
      * 根据key值得到存储结果，如果没有找到value就返回-1
-     *
      * @param key
      * @return
      */
@@ -68,7 +65,6 @@ public class SPUtils {
 
     /**
      * 清空数据
-     *
      * @return
      */
     public boolean clear() {
@@ -78,8 +74,6 @@ public class SPUtils {
 
     /**
      * 关闭当前对象
-     *
-     * @return
      */
     public void close() {
         prefs = null;
