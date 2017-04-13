@@ -223,7 +223,7 @@ public class CCGBitmapUtils {
     }
 
     /**
-     * 混合压缩,不保存图片
+     * 混合压缩 ----- 没有TargetFile------不保存图片------指定是否有质量压缩
      *
      * @param imageFile       原始图片路径
      * @param qualityCompress 是否进行质量压缩
@@ -232,12 +232,12 @@ public class CCGBitmapUtils {
      * @param targeHeight     目标高度
      * @return Bitmap
      */
-    public static Bitmap compressBitmap(String imageFile, boolean qualityCompress, long maxSize, int targetWidth, int targeHeight) {
+    public static Bitmap compressBitmapNoSave(String imageFile, boolean qualityCompress, long maxSize, int targetWidth, int targeHeight) {
         return compressBitmapWithThree(imageFile, null, false, qualityCompress, maxSize, targetWidth, targeHeight);
     }
 
     /**
-     * 三大混合压缩核心功能
+     * 三种压缩混合在一起---核心功能
      * (执行步骤sampleSize(宽高压缩)压缩->等比例压缩->质量压缩)
      *
      * @param imageFile       源图片路径
@@ -292,7 +292,9 @@ public class CCGBitmapUtils {
     }
 
     /**
-     * 混合压缩  保存图片
+     * 混合压缩 ----- 没有TargetFile------保存图片------指定是否有质量压缩
+     * sampleSize压缩->等比压缩->质量压缩
+     * 当qualityCompress 为false的时候不进行质量压缩。
      *
      * @param imageFile       原始图片路径
      * @param qualityCompress 是否进行质量压缩
@@ -300,12 +302,12 @@ public class CCGBitmapUtils {
      * @param targetWidth     目标宽度
      * @param targeHeight     目标高度
      */
-    public static void compressImage(String imageFile, boolean qualityCompress, long maxSize, int targetWidth, int targeHeight) {
-        compressImage(imageFile, null, qualityCompress, maxSize, targetWidth, targeHeight);
+    public static void compressImageCallCompressImageWithSaveWithThree(String imageFile, boolean qualityCompress, long maxSize, int targetWidth, int targeHeight) {
+        compressImageWithSaveWithThree(imageFile, null, qualityCompress, maxSize, targetWidth, targeHeight);
     }
 
     /**
-     * 压缩某张图片  保存图片
+     * 混合压缩 ----- 指定TargetFile-----保存图片------指定是否有质量压缩
      * (执行步骤sampleSize压缩->等比压缩->质量压缩)
      *
      * @param imageFile       原始图片路径
@@ -315,190 +317,203 @@ public class CCGBitmapUtils {
      * @param targetWidth     目标宽度
      * @param targeHeight     目标高度
      */
-    public static void compressImage(String imageFile, String targetFile, boolean qualityCompress, long maxSize, int targetWidth, int targeHeight) {
+    public static void compressImageWithSaveWithThree(String imageFile, String targetFile, boolean qualityCompress, long maxSize, int targetWidth, int targeHeight) {
         Bitmap bitmap = compressBitmapWithThree(imageFile, targetFile, true, qualityCompress, maxSize, targetWidth, targeHeight);
         bitmap.recycle();
     }
 
-
     /**
-     * 图片缩放-等比压缩
+     * 混合压缩 ----- 没有TargetFile-----保存图片------没有质量压缩
+     * 也就是只有----sampleSize压缩->等比压缩-----没有质量压缩
      *
      * @param imageFile   原始图片路径
      * @param targetWidth 目标宽度
      * @param targeHeight 目标高度
      */
-    public static void compressImage(String imageFile, int targetWidth, int targeHeight) {
-        compressImage(imageFile, null, false, 0L, targetWidth, targeHeight);
+    public static void compressImageNoTargetFileNoQualityCompress(String imageFile, int targetWidth, int targeHeight) {
+        compressImageWithSaveWithThree(imageFile, null, false, 0L, targetWidth, targeHeight);
     }
 
 
     /**
-     * 图片缩放-等比压缩，不保存图片
+     * 混合压缩 ----- 不保存图片------没有TargetFile-----没有质量压缩
+     * 图片缩放-等比压缩----没有质量压缩，不保存图片
      *
      * @param imageFile   原始图片路径
      * @param targetWidth 目标宽度
      * @param targeHeight 目标高度
      * @return 压缩后的Bitmap
      */
-    public static Bitmap compressBitmap(String imageFile, int targetWidth, int targeHeight) {
-        return compressBitmap(imageFile, false, 0L, targetWidth, targeHeight);
+    public static Bitmap compressBitmapCallCompressBitmapNoSave(String imageFile, int targetWidth, int targeHeight) {
+        return compressBitmapNoSave(imageFile, false, 0L, targetWidth, targeHeight);
     }
 
     /**
-     * 图片缩放-尺寸缩放
+     * 混合压缩 ----- 保存图片------没有TargetFile-----没有质量压缩
+     * 图片缩放-尺寸缩放----没有质量压缩
+     * 没有返回值
      *
      * @param imageFile 原始图片路径
      * @param scale     图片缩小倍速
      */
-    public static void compressImageSmall(String imageFile, int scale) {
+    public static void compressImageWithScale(String imageFile, int scale) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imageFile, options);
         int targetWidth = options.outWidth / scale;
         int targeHeight = options.outHeight / scale;
-        compressImage(imageFile, targetWidth, targeHeight);
+        compressImageNoTargetFileNoQualityCompress(imageFile, targetWidth, targeHeight);
     }
 
     /**
+     * 混合压缩 ----- 不保存图片------没有TargetFile-----没有质量压缩
      * 图片缩放-尺寸缩放
      *
      * @param imageFile 原始图片路径
      * @param scale     图片缩小倍速
      * @return 压缩后的Bitmap
      */
-    public static Bitmap compressBitmapSmall(String imageFile, int scale) {
+    public static Bitmap compressBitmapWithScale(String imageFile, int scale) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imageFile, options);
         int targetWidth = options.outWidth / scale;
         int targeHeight = options.outHeight / scale;
-        return compressBitmap(imageFile, targetWidth, targeHeight);
+        return compressBitmapCallCompressBitmapNoSave(imageFile, targetWidth, targeHeight);
     }
 
     /**
+     * 混合压缩 ----- 保存图片------没有TargetFile-----没有质量压缩
      * 图片缩放-尺寸缩放
      *
      * @param imageFile 原始图片路径
      * @param scale     图片放大倍速
      */
-    public static void compressImageBig(String imageFile, int scale) {
+    public static void compressImageBigWithScale(String imageFile, int scale) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imageFile, options);
         int targetWidth = options.outWidth * scale;
         int targeHeight = options.outHeight * scale;
-        compressImage(imageFile, targetWidth, targeHeight);
+        compressImageNoTargetFileNoQualityCompress(imageFile, targetWidth, targeHeight);
     }
 
     /**
+     * 混合压缩 ----- 不保存图片------没有TargetFile-----没有质量压缩
      * 图片缩放-尺寸缩放
      *
      * @param imageFile 原始图片路径
      * @param scale     图片放大倍速
      * @return 压缩后的Bitmap
      */
-    public static Bitmap compressBitmapBig(String imageFile, int scale) {
+    public static Bitmap compressBitmapBigWithScale(String imageFile, int scale) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imageFile, options);
         int targetWidth = options.outWidth * scale;
         int targeHeight = options.outHeight * scale;
-        return compressBitmap(imageFile, targetWidth, targeHeight);
+        return compressBitmapCallCompressBitmapNoSave(imageFile, targetWidth, targeHeight);
     }
 
     /**
+     * 混合压缩 ----- 保存图片------有TargetFile ----- 指定是否有质量压缩
      * 质量压缩图片
      *
-     * @param imageFile
-     * @param targetFile
-     * @param qualityCompress
-     * @param maxSize
+     * @param imageFile       原始图片路径
+     * @param targetFile      目标图片路径
+     * @param qualityCompress 是否质量压缩
+     * @param maxSize         质量压缩的大小
      */
-    public static void compressImage(String imageFile, String targetFile, boolean qualityCompress, long maxSize) {
+    public static void compressImageWithFourParams(String imageFile, String targetFile, boolean qualityCompress, long maxSize) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imageFile, options);
         int targetWidth = options.outWidth / 2;
         int targeHeight = options.outHeight / 2;
-        compressImage(imageFile, targetFile, qualityCompress, maxSize, targetWidth, targeHeight);
+        compressImageWithSaveWithThree(imageFile, targetFile, qualityCompress, maxSize, targetWidth, targeHeight);
     }
 
     /**
+     * 混合压缩 ----- 保存图片------ 没有TargetFile-----指定是否有质量压缩
      * 质量压缩图片
      *
-     * @param imageFile
-     * @param qualityCompress
-     * @param maxSize
+     * @param imageFile       原始图片路径
+     * @param qualityCompress 是否质量压缩
+     * @param maxSize         质量压缩的大小
      */
-    public static void compressImage(String imageFile, boolean qualityCompress, long maxSize) {
-        compressImage(imageFile, null, qualityCompress, maxSize);
+    public static void compressImageWithThreeParams(String imageFile, boolean qualityCompress, long maxSize) {
+        compressImageWithFourParams(imageFile, null, qualityCompress, maxSize);
     }
 
     /**
+     * 混合压缩 ----- 不保存图片------ 没有TargetFile-----指定是否有质量压缩
      * 质量压缩图片
      *
-     * @param imageFile
-     * @param qualityCompress
-     * @param maxSize
-     * @return
+     * @param imageFile       原始图片路径
+     * @param qualityCompress 是否质量压缩
+     * @param maxSize         质量压缩的大小
+     * @return 压缩后 Bitmap
      */
-    public static Bitmap compressBitmap(String imageFile, boolean qualityCompress, long maxSize) {
+    public static Bitmap compressBitmapWithThreeParams(String imageFile, boolean qualityCompress, long maxSize) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imageFile, options);
         int targetWidth = options.outWidth / 2;
         int targeHeight = options.outHeight / 2;
-        return compressBitmap(imageFile, qualityCompress, maxSize, targetWidth, targeHeight);
+        return compressBitmapNoSave(imageFile, qualityCompress, maxSize, targetWidth, targeHeight);
     }
 
     /**
+     * 混合压缩 ----- 不保存图片------ 没有TargetFile----- 有质量压缩
      * 质量压缩图片-压缩在maxSize以内
      *
-     * @param imageFile
-     * @param maxSize
+     * @param imageFile 原始图片路径
+     * @param maxSize  质量压缩的大小
      */
-    public static void compressImage(String imageFile, long maxSize) {
-        compressImage(imageFile, true, maxSize);
+    public static void compressImageWithTwoParams(String imageFile, long maxSize) {
+        compressImageWithThreeParams(imageFile, true, maxSize);
     }
 
     /**
+     * 混合压缩 ----- 不保存图片------ 没有TargetFile----- 有质量压缩
      * 质量压缩图片-压缩在maxSize以内
      *
-     * @param imageFile
-     * @param maxSize
-     * @return
+     * @param imageFile 原始图片路径
+     * @param maxSize 质量压缩的大小
+     * @return 压缩后 Bitmap
      */
-    public static Bitmap compressBimap(String imageFile, long maxSize) {
-        return compressBitmap(imageFile, true, maxSize);
+    public static Bitmap compressBimapWithTwoParams(String imageFile, long maxSize) {
+        return compressBitmapWithThreeParams(imageFile, true, maxSize);
     }
 
     /**
+     * 混合压缩 ----- 保存图片------ 没有TargetFile-----有质量压缩
      * 质量压缩图片-压缩在1M以内
      *
      * @param imageFile
      */
-    public static void compressImage(String imageFile) {
-        compressImage(imageFile, true, (long) (1 * CCGFileUtils.MB));
+    public static void compressImageWithOneParams(String imageFile) {
+        compressImageWithThreeParams(imageFile, true, (long) (1 * CCGFileUtils.MB));
     }
 
     /**
+     * 混合压缩 ----- 保存图片------ 没有TargetFile-----有质量压缩
      * 质量压缩图片-压缩在1M以内
      *
      * @param imageFile
      * @return
      */
-    public static Bitmap compressBitmap(String imageFile) {
-        return compressBitmap(imageFile, true, (long) (1 * CCGFileUtils.MB));
+    public static Bitmap compressBitmapWithOneParams(String imageFile) {
+        return compressBitmapWithThreeParams(imageFile, true, (long) (1 * CCGFileUtils.MB));
     }
 
     /**
      * 旋转bitmap
      *
-     * @param bitmap
+     * @param bitmap      源 bitmap
      * @param degress     旋转角度
-     * @param needRecycle
-     * @return
+     * @param needRecycle 是否需要回收资源
+     * @return 旋转bitmap
      */
     public static Bitmap rotateBitmap(Bitmap bitmap, int degress, boolean needRecycle) {
         Matrix m = new Matrix();
@@ -514,15 +529,13 @@ public class CCGBitmapUtils {
      * 根据path
      *
      * @param path
-     * @return
+     * @return 旋转角度
      */
     public final static int getDegress(String path) {
         int degree = 0;
         try {
             ExifInterface exifInterface = new ExifInterface(path);
-            int orientation = exifInterface.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
             switch (orientation) {
                 case ExifInterface.ORIENTATION_ROTATE_90:
                     degree = 90;
