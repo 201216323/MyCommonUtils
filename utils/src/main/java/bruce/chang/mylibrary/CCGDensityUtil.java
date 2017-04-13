@@ -1,12 +1,14 @@
 package bruce.chang.mylibrary;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.Window;
 import android.view.WindowManager;
 
 import java.lang.reflect.Field;
@@ -21,7 +23,7 @@ import java.lang.reflect.Method;
  * Description:  屏幕工具类
  */
 
-public class DensityUtil {
+public class CCGDensityUtil {
 
     /**
      * dp转像素
@@ -96,6 +98,44 @@ public class DensityUtil {
     }
 
     /**
+     * 获取得屏幕密度
+     *
+     * @param ctx
+     * @return
+     */
+    public static String getDensity(Context ctx) {
+        String densityStr = null;
+        final int density = ctx.getResources().getDisplayMetrics().densityDpi;
+        switch (density) {
+            case DisplayMetrics.DENSITY_LOW:
+                densityStr = "LDPI";
+                break;
+            case DisplayMetrics.DENSITY_MEDIUM:
+                densityStr = "MDPI";
+                break;
+            case DisplayMetrics.DENSITY_TV:
+                densityStr = "TVDPI";
+                break;
+            case DisplayMetrics.DENSITY_HIGH:
+                densityStr = "HDPI";
+                break;
+            case DisplayMetrics.DENSITY_XHIGH:
+                densityStr = "XHDPI";
+                break;
+            case DisplayMetrics.DENSITY_400:
+                densityStr = "XMHDPI";
+                break;
+            case DisplayMetrics.DENSITY_XXHIGH:
+                densityStr = "XXHDPI";
+                break;
+            case DisplayMetrics.DENSITY_XXXHIGH:
+                densityStr = "XXXHDPI";
+                break;
+        }
+        return densityStr;
+    }
+
+    /**
      * 获取屏幕宽度
      *
      * @param c
@@ -167,7 +207,24 @@ public class DensityUtil {
     }
 
     /**
-     * 获取导航栏高度
+     * 获取statusbar高度
+     *
+     * @param context
+     * @return
+     */
+    public static int getStatusBarHeight(Context context) {
+        int height = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            height = context.getResources().getDimensionPixelSize(resourceId);
+        }
+
+        return height;
+    }
+
+
+    /**
+     * 获取导航栏高度/虚拟按键
      *
      * @param c
      * @return
@@ -177,4 +234,17 @@ public class DensityUtil {
         int identifier = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         return resources.getDimensionPixelOffset(identifier);
     }
+
+    /**
+     * 获取状态栏高度＋标题栏(ActionBar)高度
+     * (注意，如果没有ActionBar，那么获取的高度将和上面的是一样的，只有状态栏的高度)
+     *
+     * @param activity
+     * @return
+     */
+    public static int getTopBarHeight(Activity activity) {
+        return activity.getWindow().findViewById(Window.ID_ANDROID_CONTENT)
+                .getTop();
+    }
+
 }

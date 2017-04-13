@@ -2,27 +2,31 @@ package bruce.chang.mylibrary;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.KeyguardManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.File;
-import java.security.MessageDigest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -37,7 +41,7 @@ import java.util.Random;
  */
 
 @SuppressLint("SimpleDateFormat")
-public class SystemUtils {
+public class CCGSystemUtils {
 
 
     /**
@@ -51,6 +55,21 @@ public class SystemUtils {
         Intent intent = new Intent(Intent.ACTION_SENDTO, smsToUri);
         intent.putExtra("sms_body", smsBody);
         cxt.startActivity(intent);
+    }
+
+    /**
+     * 发送短信
+     *
+     * @param context
+     * @param phoneNumber
+     * @param content
+     */
+    public static void sendSms(Context context, String phoneNumber, String content) {
+        Uri uri = Uri.parse("smsto:"
+                + (TextUtils.isEmpty(phoneNumber) ? "" : phoneNumber));
+        Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+        intent.putExtra("sms_body", TextUtils.isEmpty(content) ? "" : content);
+        context.startActivity(intent);
     }
 
     /**
@@ -127,243 +146,86 @@ public class SystemUtils {
         context.startActivityForResult(intent, 0);
     }
 
+
+
     /**
-     * 隐藏系统键盘
+     * 是否是系统应用
      *
-     * @param aty
+     * @param context
+     * @param packageName
+     * @return
      */
-    public static void hideKeyBoard(Activity aty) {
-        ((InputMethodManager) aty.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(aty.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    public static boolean isSystemApp(Context context, String packageName) {
+        boolean isSys = false;
+        PackageManager pm = context.getPackageManager();
+        try {
+            ApplicationInfo applicationInfo = pm.getApplicationInfo(packageName, 0);
+            if (applicationInfo != null && (applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) > 0) {
+                isSys = true;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            isSys = false;
+        }
+        return isSys;
     }
 
     /**
-     * 判断当前应用程序是否后台运行
+     * 服务是否在运行
      *
      * @param context
+     * @param className
      * @return
      */
-    public static boolean isBackground(Context context) {
+    public static boolean isServiceRunning(Context context, String className) {
+        boolean isRunning = false;
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-            if (appProcess.processName.equals(context.getPackageName())) {
-                return appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND;
+        List<ActivityManager.RunningServiceInfo> servicesList = activityManager.getRunningServices(Integer.MAX_VALUE);
+        for (ActivityManager.RunningServiceInfo si : servicesList) {
+            if (className.equals(si.service.getClassName())) {
+                isRunning = true;
             }
         }
-        return false;
+        return isRunning;
     }
 
     /**
-     * 判断手机是否处理睡眠
-     *
-     * @param context
-     * @return
+     * 进程是否运行
      */
-    public static boolean isSleeping(Context context) {
-        KeyguardManager kgMgr = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
-        return kgMgr.inKeyguardRestrictedInputMode();
-    }
+    public static boolean isProessRunning(Context context, String proessName) {
+        boolean isRunning = false;
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
-
-    /**
-     * 安装apk
-     *
-     * @param context
-     * @param apkfile
-     */
-    public static void installApk(Context context, File apkfile) {
-        Intent intent = new Intent();
-        intent.setAction("android.intent.action.VIEW");
-        intent.addCategory("android.intent.category.DEFAULT");
-        intent.setType("application/vnd.android.package-archive");
-        intent.setData(Uri.fromFile(apkfile));
-        intent.setDataAndType(Uri.fromFile(apkfile), "application/vnd.android.package-archive");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
-
-    private static final String suSearchPaths[] = {"/system/bin/", "/system/xbin/", "/system/sbin/", "/sbin/", "/vendor/bin/"};
-
-    /**
-     * 是否root
-     *
-     * @return
-     */
-    public static boolean isRooted() {
-        File file;
-        boolean flag1 = false;
-        for (String suSearchPath : suSearchPaths) {
-            file = new File(suSearchPath + "su");
-            if (file.isFile() && file.exists()) {
-                flag1 = true;
-                break;
+        List<ActivityManager.RunningAppProcessInfo> lists = am.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo info : lists) {
+            if (info.processName.equals(proessName)) {
+                isRunning = true;
+                return isRunning;
             }
         }
-        return flag1;
+
+        return isRunning;
     }
 
     /**
-     * 当前设备是否是模拟器
-     *
-     * @return
-     */
-    public static boolean isRunningOnEmulator() {
-        return Build.BRAND.contains("generic")
-                || Build.DEVICE.contains("generic")
-                || Build.PRODUCT.contains("sdk")
-                || Build.HARDWARE.contains("goldfish")
-                || Build.MANUFACTURER.contains("Genymotion")
-                || Build.PRODUCT.contains("vbox86p")
-                || Build.DEVICE.contains("vbox86p")
-                || Build.HARDWARE.contains("vbox86");
-    }
-
-    /**
-     * 获取当前应用程序的版本名称
+     * 停止服务
      *
      * @param context
+     * @param className
      * @return
      */
-    public static String getAppVersionName(Context context) {
-        String version = "0";
+    public static boolean stopRunningService(Context context, String className) {
+        Intent intent_service = null;
+        boolean ret = false;
         try {
-            version = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return version;
-    }
-
-
-    /**
-     * 获取当前应用程序的版本号
-     *
-     * @param context
-     * @return
-     */
-    public static int getAppVersionCode(Context context) {
-        int version = 0;
-        try {
-            version = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return version;
-    }
-
-    /**
-     * 返回Home
-     *
-     * @param context
-     */
-    public static void goHome(Context context) {
-        Intent mHomeIntent = new Intent(Intent.ACTION_MAIN);
-        mHomeIntent.addCategory(Intent.CATEGORY_HOME);
-        mHomeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        context.startActivity(mHomeIntent);
-    }
-
-
-    /**
-     * 获取应用签名
-     *
-     * @param context
-     * @return
-     */
-    public static String getSign(Context context) {
-        String pkgName = context.getPackageName();
-        try {
-            PackageInfo pis = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
-            return hexdigest(pis.signatures[0].toByteArray());
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(SystemUtils.class.getName() + "the " + pkgName + "'s application not found");
-        }
-    }
-
-
-    /**
-     * 32位签名
-     *
-     * @param paramArrayOfByte
-     * @return
-     */
-    public static String hexdigest(byte[] paramArrayOfByte) {
-        final char[] hexDigits = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
-        try {
-            MessageDigest localMessageDigest = MessageDigest.getInstance("MD5");
-            localMessageDigest.update(paramArrayOfByte);
-            byte[] arrayOfByte = localMessageDigest.digest();
-            char[] arrayOfChar = new char[32];
-            for (int i = 0, j = 0; ; i++, j++) {
-                if (i >= 16) {
-                    return new String(arrayOfChar);
-                }
-                int k = arrayOfByte[i];
-                arrayOfChar[j] = hexDigits[(0xF & k >>> 4)];
-                arrayOfChar[++j] = hexDigits[(k & 0xF)];
-            }
+            intent_service = new Intent(context, Class.forName(className));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "";
-    }
-
-
-    /**
-     * 获取设备可用空间
-     *
-     * @param cxt
-     * @return
-     */
-    public static int getDeviceUsableMemory(Context cxt) {
-        ActivityManager am = (ActivityManager) cxt.getSystemService(Context.ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
-        am.getMemoryInfo(mi);
-        return (int) (mi.availMem / (1024 * 1024));
-    }
-
-
-    /**
-     * 清理后台进程和服务
-     *
-     * @param cxt
-     * @return
-     */
-    public static int gc(Context cxt) {
-        //long i = getDeviceUsableMemory(cxt);
-        int count = 0;
-        ActivityManager am = (ActivityManager) cxt.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> serviceList = am.getRunningServices(100);
-        if (serviceList != null)
-            for (ActivityManager.RunningServiceInfo service : serviceList) {
-                if (service.pid == android.os.Process.myPid())
-                    continue;
-                try {
-                    android.os.Process.killProcess(service.pid);
-                    count++;
-                } catch (Exception e) {
-                    e.getStackTrace();
-                    //continue;
-                }
-            }
-
-        List<ActivityManager.RunningAppProcessInfo> processList = am.getRunningAppProcesses();
-        if (processList != null)
-            for (ActivityManager.RunningAppProcessInfo process : processList) {
-                if (process.importance > ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
-                    String[] pkgList = process.pkgList;
-                    for (String pkgName : pkgList) {
-                        try {
-                            am.killBackgroundProcesses(pkgName);
-                            count++;
-                        } catch (Exception e) {
-                            e.getStackTrace();
-                            //continue;
-                        }
-                    }
-                }
-            }
-        return count;
+        if (intent_service != null) {
+            ret = context.stopService(intent_service);
+        }
+        return ret;
     }
 
     /**
@@ -384,6 +246,126 @@ public class SystemUtils {
         }
         return currentProcessName;
     }
+    /**
+     * 结束进程
+     *
+     * @param context
+     * @param pid
+     * @param processName
+     */
+    public static void killProcesses(Context context, int pid, String processName) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        String packageName;
+        try {
+            if (!processName.contains(":")) {
+                packageName = processName;
+            } else {
+                packageName = processName.split(":")[0];
+            }
+            activityManager.killBackgroundProcesses(packageName);
+            Method forceStopPackage = activityManager.getClass().getDeclaredMethod("forceStopPackage", String.class);
+            forceStopPackage.setAccessible(true);
+            forceStopPackage.invoke(activityManager, packageName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 运行脚本
+     *
+     * @param script
+     * @return
+     */
+    public static String runScript(String script) {
+        String sRet;
+        try {
+            final Process m_process = Runtime.getRuntime().exec(script);
+            final StringBuilder sbread = new StringBuilder();
+            Thread tout = new Thread(new Runnable() {
+                public void run() {
+                    BufferedReader bufferedReader = new BufferedReader(
+                            new InputStreamReader(m_process.getInputStream()),
+                            8192);
+                    String ls_1;
+                    try {
+                        while ((ls_1 = bufferedReader.readLine()) != null) {
+                            sbread.append(ls_1).append("\n");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            bufferedReader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            tout.start();
+
+            final StringBuilder sberr = new StringBuilder();
+            Thread terr = new Thread(new Runnable() {
+                public void run() {
+                    BufferedReader bufferedReader = new BufferedReader(
+                            new InputStreamReader(m_process.getErrorStream()),
+                            8192);
+                    String ls_1;
+                    try {
+                        while ((ls_1 = bufferedReader.readLine()) != null) {
+                            sberr.append(ls_1).append("\n");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            bufferedReader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            terr.start();
+
+            m_process.waitFor();
+            while (tout.isAlive()) {
+                Thread.sleep(50);
+            }
+            if (terr.isAlive())
+                terr.interrupt();
+            String stdout = sbread.toString();
+            String stderr = sberr.toString();
+            sRet = stdout + stderr;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return sRet;
+    }
+
+
+
+
+    /**
+     * 判断当前应用程序是否后台运行
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isBackground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.processName.equals(context.getPackageName())) {
+                return appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND;
+            }
+        }
+        return false;
+    }
+
+
 
     /**
      * 创建桌面快捷方式
@@ -450,7 +432,7 @@ public class SystemUtils {
      * @param filePath
      */
     public static void shareFile(Context ctx, String title, String filePath) {
-        FileUtils.shareFile(ctx, title, filePath);
+        CCGFileUtils.shareFile(ctx, title, filePath);
     }
 
 
@@ -502,6 +484,18 @@ public class SystemUtils {
         return lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
+
+    /**
+     * 判断输入负是否处于激活状态
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isActiveSoftInput(Context context) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        return imm.isActive();
+    }
+
     /**
      * 显示软键盘
      *
@@ -516,7 +510,6 @@ public class SystemUtils {
         }
     }
 
-
     /**
      * 关闭软键盘
      *
@@ -529,6 +522,22 @@ public class SystemUtils {
             if (imm != null) {
                 imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
             }
+        }
+    }
+
+
+    /**
+     * 显示输入法
+     *
+     * @param context
+     * @param view
+     */
+    public static void showInputSoftFromWindowMethod(Context context, View view) {
+        try {
+            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -608,6 +617,25 @@ public class SystemUtils {
      */
     public static int getRandomNumber(int min, int max) {
         return new Random().nextInt(max) % (max - min + 1) + min;
+    }
+
+    /**
+     * 复制到剪切板
+     *
+     * @param context
+     * @param content
+     */
+    @TargetApi(11)
+    public static void coptyToClipBoard(Context context, String content) {
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("label", content);
+            clipboard.setPrimaryClip(clip);
+        } else {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(content);
+        }
     }
 
 }

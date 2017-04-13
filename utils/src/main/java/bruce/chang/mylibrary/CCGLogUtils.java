@@ -23,11 +23,12 @@ import javax.xml.transform.stream.StreamSource;
  * Time on: 16:49
  * Progect_Name:MyCommonUtils
  * Source Github：
- * Description:
+ * Description:  自封装的日志打印工具类
+ * 如下：[(MainActivity.java:16)#OnCreate ]   日志信息
  */
 
-public class LogUtils {
-    private static String TAG = "LogUtils";
+public class CCGLogUtils {
+    private static String TAG = "CCGLogUtils";
     private static boolean LOG_DEBUG = true;
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -120,6 +121,11 @@ public class LogUtils {
         log(XML, tag, xml);
     }
 
+    /**
+     * @param logType
+     * @param tagStr  打印时候的TAG
+     * @param objects
+     */
     private static void log(int logType, String tagStr, Object objects) {
         String[] contents = wrapperContent(tagStr, objects);
         String tag = contents[0];
@@ -147,6 +153,13 @@ public class LogUtils {
         }
     }
 
+    /**
+     * 打印普通数据
+     *
+     * @param type
+     * @param tag
+     * @param msg
+     */
     private static void printDefault(int type, String tag, String msg) {
         if (TextUtils.isEmpty(tag)) {
             tag = TAG;
@@ -168,6 +181,13 @@ public class LogUtils {
 
     }
 
+    /**
+     * 打印数据核心方法
+     *
+     * @param type
+     * @param tag
+     * @param sub
+     */
     private static void printSub(int type, String tag, String sub) {
         if (tag == null) {
             tag = TAG;
@@ -196,6 +216,13 @@ public class LogUtils {
         printLine(tag, false);
     }
 
+    /**
+     * 打印Json数据
+     *
+     * @param tag
+     * @param json
+     * @param headString
+     */
     private static void printJson(String tag, String json, String headString) {
         if (TextUtils.isEmpty(json)) {
             d("Empty/Null json content");
@@ -229,6 +256,13 @@ public class LogUtils {
         printLine(tag, false);
     }
 
+    /**
+     * 打印Xml格式数据
+     *
+     * @param tag
+     * @param xml
+     * @param headString
+     */
     private static void printXml(String tag, String xml, String headString) {
         if (TextUtils.isEmpty(tag)) {
             tag = TAG;
@@ -261,6 +295,13 @@ public class LogUtils {
     }
 
 
+    /**
+     * 获取打印日志所在的类/行/方法名
+     *
+     * @param tag
+     * @param objects
+     * @return 字符串数组：TAG   打印信息    类/行/方法名
+     */
     private static String[] wrapperContent(String tag, Object... objects) {
         if (TextUtils.isEmpty(tag)) {
             tag = TAG;
@@ -283,6 +324,10 @@ public class LogUtils {
         return new String[]{tag, msg, headString};
     }
 
+    /**
+     * @param objects
+     * @return
+     */
     private static String getObjectsString(Object... objects) {
 
         if (objects.length > 1) {

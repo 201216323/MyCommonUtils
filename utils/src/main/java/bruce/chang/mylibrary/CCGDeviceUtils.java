@@ -3,26 +3,34 @@ package bruce.chang.mylibrary;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.KeyguardManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Environment;
+import android.os.StatFs;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
-import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.webkit.WebView;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Created by: BruceChang
@@ -33,7 +41,87 @@ import java.util.UUID;
  * Description:设备信息工具
  */
 
-public class DeviceUtils {
+public class CCGDeviceUtils {
+
+
+    /**
+     * 判断SDCard是否可用
+     */
+    public static boolean existSDCard() {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * 多个SD卡时 取外置SD卡
+     *
+     * @return
+     */
+    public static String getExternalStorageDirectory() {
+        // 参考文章
+        // http://blog.csdn.net/bbmiku/article/details/7937745
+        Map<String, String> map = System.getenv();
+        String[] values = new String[map.values().size()];
+        map.values().toArray(values);
+        String path = values[values.length - 1];
+        if (path.startsWith("/mnt/") && !Environment.getExternalStorageDirectory()
+                .getAbsolutePath()
+                .equals(path)) {
+            return path;
+        } else {
+            return null;
+        }
+    }
+
+
+    /**
+     * 获取SDCard可用空间大小
+     *
+     * @return
+     */
+    public static long getAvailaleSize() {
+        if (!existSDCard()) {
+            return 0l;
+        }
+        File path = Environment.getExternalStorageDirectory(); //取得sdcard文件路径
+        StatFs stat = new StatFs(path.getPath());
+        long blockSize = stat.getBlockSize();
+        long availableBlocks = stat.getAvailableBlocks();
+        return availableBlocks * blockSize;
+    }
+    /**
+     * 获取设备可用空间
+     *
+     * @param cxt
+     * @return
+     */
+    public static int getDeviceUsableMemory(Context cxt) {
+        ActivityManager am = (ActivityManager) cxt.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+        am.getMemoryInfo(mi);
+        return (int) (mi.availMem / (1024 * 1024));
+    }
+
+
+    /**
+     * 获取SD大小
+     *
+     * @return
+     */
+    public static long getAllSize() {
+        if (!existSDCard()) {
+            return 0l;
+        }
+        File path = Environment.getExternalStorageDirectory();
+        StatFs stat = new StatFs(path.getPath());
+        long blockSize = stat.getBlockSize();
+        long availableBlocks = stat.getBlockCount();
+        return availableBlocks * blockSize;
+    }
 
     /**
      * 获取AndroidID
@@ -42,7 +130,19 @@ public class DeviceUtils {
      * @return
      */
     public static String getAndroidID(Context ctx) {
-        return Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
+        String udid = Settings.Secure.getString(ctx.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        if (CCGStringUtils.isEmpty(udid) || udid.equals("9774d56d682e549c")
+                || udid.length() < 15) {
+            SecureRandom random = new SecureRandom();
+            udid = new BigInteger(64, random).toString(16);
+        }
+
+        if (CCGStringUtils.isEmpty(udid)) {
+            udid = "";
+        }
+
+        return udid;
     }
 
     /**
@@ -66,81 +166,6 @@ public class DeviceUtils {
         return tm.getSubscriberId() != null ? tm.getSubscriberId() : null;
     }
 
-
-    /**
-     * 获取MAC地址
-     *
-     * @param ctx
-     * @return
-     */
-    @SuppressWarnings("MissingPermission")
-    public static String getWifiMacAddr(Context ctx) {
-        String macAddr = "";
-        try {
-            WifiManager wifi = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
-            macAddr = wifi.getConnectionInfo().getMacAddress();
-            if (macAddr == null) {
-                macAddr = "";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return macAddr;
-    }
-
-
-    /**
-     * 获取网络IP地址(优先获取wifi地址)
-     *
-     * @param ctx
-     * @return
-     */
-    public static String getIP(Context ctx) {
-        WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
-        return wifiManager.isWifiEnabled() ? getWifiIP(wifiManager) : getGPRSIP();
-    }
-
-    /**
-     * 获取WIFI连接下的ip地址
-     *
-     * @param wifiManager
-     * @return
-     */
-    public static String getWifiIP(WifiManager wifiManager) {
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        String ip = intToIp(wifiInfo.getIpAddress());
-        return ip != null ? ip : "";
-    }
-
-    /**
-     * 获取GPRS连接下的ip地址
-     *
-     * @return
-     */
-    public static String getGPRSIP() {
-        String ip = null;
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                for (Enumeration<InetAddress> enumIpAddr = en.nextElement().getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
-                        ip = inetAddress.getHostAddress();
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-            ip = null;
-        }
-        return ip;
-    }
-
-
-    private static String intToIp(int i) {
-        return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF) + "." + (i >> 24 & 0xFF);
-    }
-
-
     /**
      * 获取设备序列号
      *
@@ -159,33 +184,6 @@ public class DeviceUtils {
     public static String getSIMSerial(Context ctx) {
         TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getSimSerialNumber();
-    }
-
-    /**
-     * 获取网络运营商 46000,46002,46007 中国移动,46001 中国联通,46003 中国电信
-     *
-     * @param ctx
-     * @return
-     */
-    public static String getMNC(Context ctx) {
-        String providersName = "";
-        TelephonyManager telephonyManager = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-        if (telephonyManager.getSimState() == TelephonyManager.SIM_STATE_READY) {
-            providersName = telephonyManager.getSimOperator();
-            providersName = providersName == null ? "" : providersName;
-        }
-        return providersName;
-    }
-
-    /**
-     * 获取网络运营商：中国电信,中国移动,中国联通
-     *
-     * @param ctx
-     * @return
-     */
-    public static String getCarrier(Context ctx) {
-        TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-        return tm.getNetworkOperatorName().toLowerCase(Locale.getDefault());
     }
 
 
@@ -512,43 +510,6 @@ public class DeviceUtils {
         }
     }
 
-    /**
-     * 获取得屏幕密度
-     *
-     * @param ctx
-     * @return
-     */
-    public static String getDensity(Context ctx) {
-        String densityStr = null;
-        final int density = ctx.getResources().getDisplayMetrics().densityDpi;
-        switch (density) {
-            case DisplayMetrics.DENSITY_LOW:
-                densityStr = "LDPI";
-                break;
-            case DisplayMetrics.DENSITY_MEDIUM:
-                densityStr = "MDPI";
-                break;
-            case DisplayMetrics.DENSITY_TV:
-                densityStr = "TVDPI";
-                break;
-            case DisplayMetrics.DENSITY_HIGH:
-                densityStr = "HDPI";
-                break;
-            case DisplayMetrics.DENSITY_XHIGH:
-                densityStr = "XHDPI";
-                break;
-            case DisplayMetrics.DENSITY_400:
-                densityStr = "XMHDPI";
-                break;
-            case DisplayMetrics.DENSITY_XXHIGH:
-                densityStr = "XXHDPI";
-                break;
-            case DisplayMetrics.DENSITY_XXXHIGH:
-                densityStr = "XXXHDPI";
-                break;
-        }
-        return densityStr;
-    }
 
     /**
      * 获取google账号
@@ -569,6 +530,169 @@ public class DeviceUtils {
         }
         return null;
     }
+
+
+    /**
+     * 获取Cpu内核数
+     *
+     * @return
+     */
+    public static int getCPUCoresNum() {
+        try {
+            File dir = new File("/sys/devices/system/cpu/");
+            File[] files = dir.listFiles(new FileFilter() {
+
+                @Override
+                public boolean accept(File pathname) {
+                    return Pattern.matches("cpu[0-9]", pathname.getName());
+                }
+
+            });
+            return files.length;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        }
+    }
+
+    private static final String suSearchPaths[] = {"/system/bin/", "/system/xbin/", "/system/sbin/", "/sbin/", "/vendor/bin/"};
+
+    /**
+     * 是否root
+     *
+     * @return
+     */
+    public static boolean isRooted() {
+        File file;
+        boolean flag1 = false;
+        for (String suSearchPath : suSearchPaths) {
+            file = new File(suSearchPath + "su");
+            if (file.isFile() && file.exists()) {
+                flag1 = true;
+                break;
+            }
+        }
+        return flag1;
+    }
+
+
+    /**
+     * 获得root权限
+     *
+     * @param context
+     * @return
+     */
+    public static boolean getRootPermission(Context context) {
+        String packageCodePath = context.getPackageCodePath();
+        Process process = null;
+        DataOutputStream os = null;
+        try {
+            String cmd = "chmod 777 " + packageCodePath;
+            process = Runtime.getRuntime().exec("su");
+            os = new DataOutputStream(process.getOutputStream());
+            os.writeBytes(cmd + "\n");
+            os.writeBytes("exit\n");
+            os.flush();
+            process.waitFor();
+        } catch (Exception e) {
+            return false;
+        } finally {
+            try {
+                if (os != null) {
+                    os.close();
+                }
+                process.destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * 当前设备是否是模拟器
+     *
+     * @return
+     */
+    public static boolean isRunningOnEmulator() {
+        return Build.BRAND.contains("generic")
+                || Build.DEVICE.contains("generic")
+                || Build.PRODUCT.contains("sdk")
+                || Build.HARDWARE.contains("goldfish")
+                || Build.MANUFACTURER.contains("Genymotion")
+                || Build.PRODUCT.contains("vbox86p")
+                || Build.DEVICE.contains("vbox86p")
+                || Build.HARDWARE.contains("vbox86");
+    }
+
+
+    /**
+     * 判断是否有软控制键（手机底部几个按钮）
+     *
+     * @param activity
+     * @return
+     */
+    public boolean isSoftKeyAvail(Activity activity) {
+        final boolean[] isSoftkey = {false};
+        final View activityRootView = (activity).getWindow().getDecorView().findViewById(android.R.id.content);
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int rootViewHeight = activityRootView.getRootView().getHeight();
+                int viewHeight = activityRootView.getHeight();
+                int heightDiff = rootViewHeight - viewHeight;
+                if (heightDiff > 100) { // 99% of the time the height diff will be due to a keyboard.
+                    isSoftkey[0] = true;
+                }
+            }
+        });
+        return isSoftkey[0];
+    }
+
+
+    /**
+     * 震动
+     *
+     * @param context
+     * @param duration
+     */
+    public static void vibrate(Context context, long duration) {
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        long[] pattern = {
+                0, duration
+        };
+        vibrator.vibrate(pattern, -1);
+    }
+
+
+    /**
+     * 判断当前设备是否为手机
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isPhone(Context context) {
+        TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (telephony.getPhoneType() == TelephonyManager.PHONE_TYPE_NONE) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 判断手机是否处理睡眠
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isSleeping(Context context) {
+        KeyguardManager kgMgr = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        return kgMgr.inKeyguardRestrictedInputMode();
+    }
+
+
 }
 
 

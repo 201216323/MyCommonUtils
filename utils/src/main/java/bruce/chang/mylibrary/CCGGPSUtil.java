@@ -9,7 +9,7 @@ package bruce.chang.mylibrary;
  * Description:GPS坐标转换工具
  */
 
-public class CoordinateTransformUtil {
+public class CCGGPSUtil {
     static double x_pi = 3.14159265358979324 * 3000.0 / 180.0;
     static double pi = 3.1415926535897932384626;
     static double a = 6378245.0;

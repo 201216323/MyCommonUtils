@@ -14,14 +14,15 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.beiing.roundimageview.R;
+import bruce.chang.mylibrary.R;
+
 
 /**
  * Created by chenliu on 2016/8/19.<br/>
  * 描述：
  * </br>
  */
-public abstract class AbsRoundImageView extends ImageView {
+public abstract class CCGAbsRoundImageView extends ImageView {
 
     private static final PorterDuffXfermode xFermode = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
 
@@ -49,15 +50,15 @@ public abstract class AbsRoundImageView extends ImageView {
 
     private Paint borderPaint;
 
-    public AbsRoundImageView(Context context) {
+    public CCGAbsRoundImageView(Context context) {
         this(context, null, 0);
     }
 
-    public AbsRoundImageView(Context context, AttributeSet attrs) {
+    public CCGAbsRoundImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public AbsRoundImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CCGAbsRoundImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initAttrs(attrs);
         init();
@@ -65,9 +66,9 @@ public abstract class AbsRoundImageView extends ImageView {
 
     protected void initAttrs(AttributeSet attrs){
         if (attrs != null) {
-            TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.AbsRoundImageView);
-            borderWidth = ta.getDimension(R.styleable.AbsRoundImageView_riv_borderWidth, 0);
-            borderColor = ta.getColor(R.styleable.AbsRoundImageView_riv_borderColor, 0);
+            TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.CCGAbsRoundImageView);
+            borderWidth = ta.getDimension(R.styleable.CCGAbsRoundImageView_riv_borderWidth, 0);
+            borderColor = ta.getColor(R.styleable.CCGAbsRoundImageView_riv_borderColor, 0);
             ta.recycle();
         }
     }

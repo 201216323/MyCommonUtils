@@ -13,7 +13,7 @@ import android.widget.Toast;
  * Function:
  */
 
-public class ToastUtils {
+public class CCGToastUtils {
 
     public static void showToast(Context context, String content) {
         Toast.makeText(context, content, Toast.LENGTH_SHORT).show();

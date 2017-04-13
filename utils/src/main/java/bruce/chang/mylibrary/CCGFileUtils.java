@@ -37,7 +37,7 @@ import bruce.chang.mylibrary.service.DownloadService;
  * Description: 文件操作工具类
  */
 
-public class FileUtils {
+public class CCGFileUtils {
 
     /**
      * 关闭IO流
@@ -350,7 +350,7 @@ public class FileUtils {
      * @return
      */
     public static String getFileName(String filePath) {
-        if (StringUtils.isEmpty(filePath)) {
+        if (CCGStringUtils.isEmpty(filePath)) {
             return filePath;
         }
 

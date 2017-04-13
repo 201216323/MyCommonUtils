@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * Description:验证工具类
  */
 
-public class VerificationUtils {
+public class CCGVerificationUtils {
 
 
     /**

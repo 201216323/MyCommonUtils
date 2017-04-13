@@ -20,7 +20,7 @@ import java.util.Map;
  * Description:Json工具类(需要依赖Gson 2.0以上)
  */
 
-public class JsonUtils {
+public class CCGJsonUtils {
 
     /**
      * 对象转json

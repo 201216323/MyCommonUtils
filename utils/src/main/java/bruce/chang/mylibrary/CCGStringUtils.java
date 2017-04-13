@@ -1,5 +1,7 @@
 package bruce.chang.mylibrary;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 
 /**
@@ -11,7 +13,7 @@ import java.text.DecimalFormat;
  * Description:
  */
 
-public class StringUtils {
+public class CCGStringUtils {
     private static int[] pyvalue = new int[]{-20319, -20317, -20304, -20295, -20292, -20283, -20265, -20257, -20242, -20230, -20051, -20036, -20032,
             -20026, -20002, -19990, -19986, -19982, -19976, -19805, -19784, -19775, -19774, -19763, -19756, -19751, -19746, -19741, -19739, -19728,
             -19725, -19715, -19540, -19531, -19525, -19515, -19500, -19484, -19479, -19467, -19289, -19288, -19281, -19275, -19270, -19263, -19261,
@@ -65,12 +67,143 @@ public class StringUtils {
 
 
     /**
+     * 是否是空字符串
+     *
+     * @param str
+     * @return if string is null or its size is 0, return true, else return false.
+     */
+    public static boolean isEmpty(String str) {
+        return str == null || str.trim().length() == 0;
+    }
+
+    /**
+     * @param str
+     * @return if string is null or its size is 0 or it is made by space, return true, else return false.
+     */
+    public static boolean isBlank(String str) {
+        return (str == null || str.trim().length() == 0);
+    }
+
+    /**
+     * @param str
+     * @return if str is null or empty, return 0, else return  CharSequence#length()
+     */
+    public static int length(CharSequence str) {
+        return str == null ? 0 : str.length();
+    }
+
+    /**
+     * null Object to empty string
+     *
+     * <pre>
+     * nullStrToEmpty(null) = &quot;&quot;;
+     * nullStrToEmpty(&quot;&quot;) = &quot;&quot;;
+     * nullStrToEmpty(&quot;aa&quot;) = &quot;aa&quot;;
+     * </pre>
+     *
+     * @param str
+     * @return
+     */
+    public static String nullStrToEmpty(Object str) {
+        return (str == null ? "" : (str instanceof String ? (String)str : str.toString()));
+    }
+
+    /**
+     * capitalize first letter
+     *
+     * <pre>
+     * capitalizeFirstLetter(null)     =   null;
+     * capitalizeFirstLetter("")       =   "";
+     * capitalizeFirstLetter("2ab")    =   "2ab"
+     * capitalizeFirstLetter("a")      =   "A"
+     * capitalizeFirstLetter("ab")     =   "Ab"
+     * capitalizeFirstLetter("Abc")    =   "Abc"
+     * </pre>
+     *
+     * @param str
+     * @return
+     */
+    public static String capitalizeFirstLetter(String str) {
+        if (isEmpty(str)) {
+            return str;
+        }
+
+        char c = str.charAt(0);
+        return (!Character.isLetter(c) || Character.isUpperCase(c)) ? str : new StringBuilder(str.length())
+                .append(Character.toUpperCase(c)).append(str.substring(1)).toString();
+    }
+
+
+    /**
+     * encoded in utf-8
+     *
+     * <pre>
+     * utf8Encode(null)        =   null
+     * utf8Encode("")          =   "";
+     * utf8Encode("aa")        =   "aa";
+     * utf8Encode("啊啊啊啊")   = "%E5%95%8A%E5%95%8A%E5%95%8A%E5%95%8A";
+     * </pre>
+     *
+     * @param str
+     * @return
+     * @throws UnsupportedEncodingException if an error occurs
+     */
+    public static String utf8Encode(String str) {
+        if (!isEmpty(str) && str.getBytes().length != str.length()) {
+            try {
+                return URLEncoder.encode(str, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("UnsupportedEncodingException occurred. ", e);
+            }
+        }
+        return str;
+    }
+
+
+    /**
+     * encoded in utf-8, if exception, return defultReturn
+     *
+     * @param str
+     * @param defultReturn
+     * @return
+     */
+    public static String utf8Encode(String str, String defultReturn) {
+        if (!isEmpty(str) && str.getBytes().length != str.length()) {
+            try {
+                return URLEncoder.encode(str, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                return defultReturn;
+            }
+        }
+        return str;
+    }
+
+    /**
+     * 数据库字符转义
+     * @param keyWord
+     * @return
+     */
+    public static String sqliteEscape(String keyWord){
+        keyWord = keyWord.replace("/", "//");
+        keyWord = keyWord.replace("'", "''");
+        keyWord = keyWord.replace("[", "/[");
+        keyWord = keyWord.replace("]", "/]");
+        keyWord = keyWord.replace("%", "/%");
+        keyWord = keyWord.replace("&","/&");
+        keyWord = keyWord.replace("_", "/_");
+        keyWord = keyWord.replace("(", "/(");
+        keyWord = keyWord.replace(")", "/)");
+        return keyWord;
+    }
+
+
+    /**
      * 汉字转成ASCII码
      *
      * @param chs
      * @return
      */
-    public static int getChsAscii(String chs) {
+    public static int getChineseToASCIICode(String chs) {
         int asc = 0;
         try {
             byte[] bytes = chs.getBytes("gb2312");
@@ -91,6 +224,7 @@ public class StringUtils {
         return asc;
     }
 
+
     /**
      * 单字解析
      *
@@ -99,7 +233,7 @@ public class StringUtils {
      */
     public static String convert(String str) {
         String result = null;
-        int ascii = getChsAscii(str);
+        int ascii = getChineseToASCIICode(str);
         if (ascii > 0 && ascii < 160) {
             result = String.valueOf((char) ascii);
         } else {
@@ -138,35 +272,12 @@ public class StringUtils {
     }
 
     /**
-     * 将null转化为""
-     *
-     * @param str
-     * @return
-     */
-    public static String parseEmpty(String str) {
-        if (str == null || "null".equals(str.trim())) {
-            str = "";
-        }
-        return str.trim();
-    }
-
-    /**
-     * 是否是空字符串
-     *
-     * @param str
-     * @return
-     */
-    public static boolean isEmpty(String str) {
-        return str == null || str.trim().length() == 0;
-    }
-
-    /**
      * 中文长度
      *
      * @param str
      * @return
      */
-    public static int chineseLength(String str) {
+    public static int getChineseLength(String str) {
         int valueLength = 0;
         String chinese = "[\u0391-\uFFE5]";
         if (!isEmpty(str)) {
@@ -182,11 +293,11 @@ public class StringUtils {
 
     /**
      * 字符串长度
-     *
+     *可以是中文或者英文
      * @param str
      * @return
      */
-    public static int strLength(String str) {
+    public static int getStringLength(String str) {
         int valueLength = 0;
         String chinese = "[\u0391-\uFFE5]";
         if (!isEmpty(str)) {

@@ -41,7 +41,7 @@ dependencies {
 //    groupId = 'bruce.chang'         //compile引用时的第1部分groupId
 //    artifactId = 'mylibrary'     //compile引用时的第2部分项目名
 //    publishVersion = '1.1.0'    //compile引用时的第3部分版本号
-//    desc = 'This is a library,contain some utils,such as:AppUtils、DensityUtil、DateUtils、NetUtils etc'
+//    desc = 'This is a library,contain some utils,such as:CCGApkUtils、CCGDensityUtil、CCGDateUtils、CCGNetUtils etc'
 //    website = 'https://github.com/201216323/MyCommonUtils.git'
 //}
 

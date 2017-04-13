@@ -14,7 +14,7 @@ import bruce.chang.mylibrary.R;
  * 描述：
  * </br>
  */
-public class RoundImageView extends AbsRoundImageView {
+public class CCGRoundImageView extends CCGAbsRoundImageView {
 
     private float leftTopRadius;
 
@@ -24,15 +24,15 @@ public class RoundImageView extends AbsRoundImageView {
 
     private float leftBottomRadius;
 
-    public RoundImageView(Context context) {
+    public CCGRoundImageView(Context context) {
         this(context, null, 0);
     }
 
-    public RoundImageView(Context context, AttributeSet attrs) {
+    public CCGRoundImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public RoundImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CCGRoundImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initAttrs(attrs);
     }
@@ -40,11 +40,11 @@ public class RoundImageView extends AbsRoundImageView {
     protected void initAttrs(AttributeSet attrs) {
         super.initAttrs(attrs);
         if (attrs != null) {
-            TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.RoundImageView);
-            leftTopRadius = ta.getDimension(R.styleable.RoundImageView_riv_leftTopRadius, 0);
-            rightTopRadius = ta.getDimension(R.styleable.RoundImageView_riv_rightTopRadius, 0);
-            rightBottomRadius = ta.getDimension(R.styleable.RoundImageView_riv_rightBottomRadius, 0);
-            leftBottomRadius = ta.getDimension(R.styleable.RoundImageView_riv_leftBottomRadius, 0);
+            TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.CCGRoundImageView);
+            leftTopRadius = ta.getDimension(R.styleable.CCGRoundImageView_riv_leftTopRadius, 0);
+            rightTopRadius = ta.getDimension(R.styleable.CCGRoundImageView_riv_rightTopRadius, 0);
+            rightBottomRadius = ta.getDimension(R.styleable.CCGRoundImageView_riv_rightBottomRadius, 0);
+            leftBottomRadius = ta.getDimension(R.styleable.CCGRoundImageView_riv_leftBottomRadius, 0);
             ta.recycle();
         }
     }

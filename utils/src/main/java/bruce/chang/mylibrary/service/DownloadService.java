@@ -10,8 +10,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
 
-import bruce.chang.mylibrary.AppUtils;
-import bruce.chang.mylibrary.LogUtils;
+import bruce.chang.mylibrary.CCGApkUtils;
+import bruce.chang.mylibrary.CCGLogUtils;
 
 /**
  * Created by: BruceChang
@@ -39,7 +39,7 @@ public class DownloadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        LogUtils.w("onStartCommand:" + intent.getStringExtra("fileurl"));
+        CCGLogUtils.w("onStartCommand:" + intent.getStringExtra("fileurl"));
         String fileurl = intent.getStringExtra("fileurl");
         downloadFile(fileurl);
         return super.onStartCommand(intent, flags, startId);
@@ -82,7 +82,7 @@ public class DownloadService extends Service {
                 case DownloadManager.STATUS_RUNNING:
                     break;*/
                 case DownloadManager.STATUS_SUCCESSFUL:
-                    AppUtils.installApk(this, filePath);
+                    CCGApkUtils.installApk_1(this, filePath);
                     break;
             }
         }

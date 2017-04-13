@@ -9,18 +9,18 @@ import android.util.AttributeSet;
  * 描述：
  * </br>
  */
-public class CircleImageView extends AbsRoundImageView {
+public class CCGCircleImageView extends CCGAbsRoundImageView {
 
 
-    public CircleImageView(Context context) {
+    public CCGCircleImageView(Context context) {
         this(context, null, 0);
     }
 
-    public CircleImageView(Context context, AttributeSet attrs) {
+    public CCGCircleImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CircleImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CCGCircleImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
