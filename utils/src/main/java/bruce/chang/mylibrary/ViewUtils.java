@@ -3,8 +3,6 @@ package bruce.chang.mylibrary;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -137,7 +135,7 @@ public class ViewUtils {
      * @param v
      * @return
      */
-    public static Bitmap captureView(View v) {
+    public static Bitmap captureView_1(View v) {
         v.setDrawingCacheEnabled(true);
         v.buildDrawingCache();
         return v.getDrawingCache();
@@ -150,7 +148,7 @@ public class ViewUtils {
      * @param v
      * @return
      */
-    public static Bitmap createViewBitmap(View v) {
+    public static Bitmap captureView_2(View v) {
         Bitmap bitmap = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         v.draw(canvas);
@@ -164,7 +162,7 @@ public class ViewUtils {
      * @param view
      * @return
      */
-    public static Bitmap convertViewToBitmap(View view) {
+    public static Bitmap captureView_3(View view) {
         view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
         view.buildDrawingCache();
@@ -178,55 +176,10 @@ public class ViewUtils {
      * @param activity
      * @return
      */
-    public static Bitmap getActivityBitmap(Activity activity) {
+    public static Bitmap captureView_4(Activity activity) {
         View view = activity.getWindow().getDecorView().findViewById(android.R.id.content);
         view.setDrawingCacheEnabled(true);
         return view.getDrawingCache();
-    }
-
-
-    /**
-     * 获取状态栏高度
-     *
-     * @param context
-     * @return
-     */
-    public static int getStatusBarHeight(Context context) {
-        int result = 0;
-        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = context.getResources().getDimensionPixelSize(resourceId);
-        }
-        return result;
-    }
-
-
-    /**
-     * 获取工具栏高度
-     *
-     * @param context
-     * @return
-     */
-    public static int getToolbarHeight(Context context) {
-        final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(new int[]{R.attr.actionBarSize});
-        int toolbarHeight = (int) styledAttributes.getDimension(0, 0);
-        styledAttributes.recycle();
-        return toolbarHeight;
-    }
-
-    /**
-     * 获取导航栏高度
-     *
-     * @param activity
-     * @return
-     */
-    public static int getNavigationBarHeight(Activity activity) {
-        Resources resources = activity.getResources();
-        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            return resources.getDimensionPixelSize(resourceId);
-        }
-        return 0;
     }
 
     /**

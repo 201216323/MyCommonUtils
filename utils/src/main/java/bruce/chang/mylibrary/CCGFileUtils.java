@@ -39,6 +39,10 @@ import bruce.chang.mylibrary.service.DownloadService;
 
 public class CCGFileUtils {
 
+    public static final double KB = 1024.0;
+    public static final double MB = KB * KB;
+    public static final double GB = KB * KB * KB;
+
     /**
      * 关闭IO流
      *
