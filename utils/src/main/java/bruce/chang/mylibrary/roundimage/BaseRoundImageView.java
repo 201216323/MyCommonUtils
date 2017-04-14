@@ -11,8 +11,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import bruce.chang.mylibrary.R;
 
@@ -22,7 +22,7 @@ import bruce.chang.mylibrary.R;
  * 描述：
  * </br>
  */
-public abstract class CCGAbsRoundImageView extends ImageView {
+public abstract class BaseRoundImageView extends AppCompatImageView {
 
     private static final PorterDuffXfermode xFermode = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
 
@@ -50,25 +50,25 @@ public abstract class CCGAbsRoundImageView extends ImageView {
 
     private Paint borderPaint;
 
-    public CCGAbsRoundImageView(Context context) {
+    public BaseRoundImageView(Context context) {
         this(context, null, 0);
     }
 
-    public CCGAbsRoundImageView(Context context, AttributeSet attrs) {
+    public BaseRoundImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CCGAbsRoundImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BaseRoundImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initAttrs(attrs);
         init();
     }
 
-    protected void initAttrs(AttributeSet attrs){
+    protected void initAttrs(AttributeSet attrs) {
         if (attrs != null) {
-            TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.CCGAbsRoundImageView);
-            borderWidth = ta.getDimension(R.styleable.CCGAbsRoundImageView_riv_borderWidth, 0);
-            borderColor = ta.getColor(R.styleable.CCGAbsRoundImageView_riv_borderColor, 0);
+            TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.BaseRoundImageView);
+            borderWidth = ta.getDimension(R.styleable.BaseRoundImageView_riv_borderWidth, 0);
+            borderColor = ta.getColor(R.styleable.BaseRoundImageView_riv_borderColor, 0);
             ta.recycle();
         }
     }
@@ -88,7 +88,7 @@ public abstract class CCGAbsRoundImageView extends ImageView {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        if(changed){
+        if (changed) {
             initBorderPath();
             initRoundPath();
         }
@@ -108,6 +108,7 @@ public abstract class CCGAbsRoundImageView extends ImageView {
 
     /**
      * 获取图片区域纯颜色Bitmap
+     *
      * @return
      */
     protected Bitmap getRoundBitmap() {
@@ -134,7 +135,7 @@ public abstract class CCGAbsRoundImageView extends ImageView {
 
     private void drawImage(Canvas canvas) {
         Drawable drawable = getDrawable();
-        if(!isInEditMode() && drawable != null) {
+        if (!isInEditMode() && drawable != null) {
             try {
                 Bitmap bitmap;
                 if (drawable instanceof ColorDrawable) {

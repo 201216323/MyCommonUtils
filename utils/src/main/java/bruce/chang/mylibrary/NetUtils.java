@@ -30,7 +30,7 @@ import java.util.Locale;
  * Description:
  */
 
-public class CCGNetUtils {
+public class NetUtils {
     //获取网络类型  字符串格式
     public static final String NETWORK_TYPE_WIFI = "wifi";
     public static final String NETWORK_TYPE_3G = "3g";

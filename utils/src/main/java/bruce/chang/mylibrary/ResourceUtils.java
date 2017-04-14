@@ -11,7 +11,7 @@ import android.content.Context;
  * Description:通过资源名称获取资源ID
  */
 
-public class CCGResourceUtils {
+public class ResourceUtils {
 
 
     /**

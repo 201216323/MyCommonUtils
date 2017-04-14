@@ -14,12 +14,12 @@ import java.util.List;
  * Author:pengjianbo
  * Date:15/12/22 下午6:00
  */
-public abstract class CCGViewHolderAdapter<VH extends CCGViewHolderAdapter.ViewHolder, T> extends BaseAdapter {
+public abstract class BaseViewHolderAdapter<VH extends BaseViewHolderAdapter.ViewHolder, T> extends BaseAdapter {
     private Context mContext;
     private List<T> mList;
     private LayoutInflater mInflater;
 
-    public CCGViewHolderAdapter(Context context, List<T> list) {
+    public BaseViewHolderAdapter(Context context, List<T> list) {
         this.mContext = context;
         this.mList= list;
         this.mInflater = LayoutInflater.from(mContext);

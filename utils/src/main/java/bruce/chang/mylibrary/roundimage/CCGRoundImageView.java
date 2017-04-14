@@ -14,7 +14,7 @@ import bruce.chang.mylibrary.R;
  * 描述：
  * </br>
  */
-public class CCGRoundImageView extends CCGAbsRoundImageView {
+public class CCGRoundImageView extends BaseRoundImageView {
 
     private float leftTopRadius;
 

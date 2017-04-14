@@ -14,7 +14,7 @@ import java.util.Date;
  * Description:日期工具类
  */
 
-public class CCGDateUtils {
+public class DateUtils {
 
     private static final SimpleDateFormat DATE_FORMAT_DATETIME = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final SimpleDateFormat DATE_FORMAT_DATE = new SimpleDateFormat("yyyy-MM-dd");

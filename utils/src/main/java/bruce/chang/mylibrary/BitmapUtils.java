@@ -28,7 +28,7 @@ import java.io.IOException;
  * Description:  Bitmap操作的工具类
  */
 
-public class CCGBitmapUtils {
+public class BitmapUtils {
 
 
     /**
@@ -281,7 +281,7 @@ public class CCGBitmapUtils {
         //是否需要保存
         if (isSave) {
             String savePath = imageFile;
-            if (!CCGStringUtils.isEmpty(targetFile)) {
+            if (!StringUtils.isEmpty(targetFile)) {
                 savePath = targetFile;
             }
 
@@ -493,7 +493,7 @@ public class CCGBitmapUtils {
      * @param imageFile
      */
     public static void compressImageWithOneParams(String imageFile) {
-        compressImageWithThreeParams(imageFile, true, (long) (1 * CCGFileUtils.MB));
+        compressImageWithThreeParams(imageFile, true, (long) (1 * FileUtils.MB));
     }
 
     /**
@@ -504,7 +504,7 @@ public class CCGBitmapUtils {
      * @return
      */
     public static Bitmap compressBitmapWithOneParams(String imageFile) {
-        return compressBitmapWithThreeParams(imageFile, true, (long) (1 * CCGFileUtils.MB));
+        return compressBitmapWithThreeParams(imageFile, true, (long) (1 * FileUtils.MB));
     }
 
     /**

@@ -432,7 +432,7 @@ public class CCGSystemUtils {
      * @param filePath
      */
     public static void shareFile(Context ctx, String title, String filePath) {
-        CCGFileUtils.shareFile(ctx, title, filePath);
+        FileUtils.shareFile(ctx, title, filePath);
     }
 
 

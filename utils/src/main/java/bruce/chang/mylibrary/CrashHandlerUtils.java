@@ -26,13 +26,13 @@ import java.util.Map;
  * Date:15/10/31 上午9:08
  * <p>
  * <p>
- * CCGCrashHandler catchHandler = CCGCrashHandler.getInstance();
+ * CrashHandlerUtils catchHandler = CrashHandlerUtils.getInstance();
  * catchHandler.init(getApplicationContext());
  */
-public class CCGCrashHandler implements Thread.UncaughtExceptionHandler {
+public class CrashHandlerUtils implements Thread.UncaughtExceptionHandler {
 
     private Thread.UncaughtExceptionHandler mDefaultHandler;// 系统默认的UncaughtException处理类
-    private static CCGCrashHandler instance;// CrashHandler实例
+    private static CrashHandlerUtils instance;// CrashHandler实例
     private Context mContext;// 程序的Context对象
     private boolean mCrashSave;//是否保存crash信息
     private String mCrashSaveTargetFolder;
@@ -48,7 +48,7 @@ public class CCGCrashHandler implements Thread.UncaughtExceptionHandler {
     /**
      * 保证只有一个CrashHandler实例
      */
-    private CCGCrashHandler() {
+    private CrashHandlerUtils() {
     }
 
     /**
@@ -56,9 +56,9 @@ public class CCGCrashHandler implements Thread.UncaughtExceptionHandler {
      *
      * @return
      */
-    public static CCGCrashHandler getInstance() {
+    public static CrashHandlerUtils getInstance() {
         if (instance == null)
-            instance = new CCGCrashHandler();
+            instance = new CrashHandlerUtils();
         return instance;
     }
 
@@ -70,7 +70,7 @@ public class CCGCrashHandler implements Thread.UncaughtExceptionHandler {
      * @param context
      * @return
      */
-    public CCGCrashHandler init(Context context) {
+    public CrashHandlerUtils init(Context context) {
         mContext = context;
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();// 获取系统默认的UncaughtException处理器
         Thread.setDefaultUncaughtExceptionHandler(this);// 设置该CrashHandler为程序的默认处理器
@@ -146,7 +146,7 @@ public class CCGCrashHandler implements Thread.UncaughtExceptionHandler {
      * @param listener
      * @return
      */
-    public CCGCrashHandler setOnCrashListener(OnCrashListener listener) {
+    public CrashHandlerUtils setOnCrashListener(OnCrashListener listener) {
         this.mOnCrashListener = listener;
         return this;
     }
@@ -157,7 +157,7 @@ public class CCGCrashHandler implements Thread.UncaughtExceptionHandler {
      * @param isSave
      * @return
      */
-    public CCGCrashHandler setCrashSave(boolean isSave) {
+    public CrashHandlerUtils setCrashSave(boolean isSave) {
         this.mCrashSave = isSave;
         return this;
     }
@@ -168,7 +168,7 @@ public class CCGCrashHandler implements Thread.UncaughtExceptionHandler {
      * @param targetFolder
      * @return
      */
-    public CCGCrashHandler setCrashSaveTargetFolder(String targetFolder) {
+    public CrashHandlerUtils setCrashSaveTargetFolder(String targetFolder) {
         this.mCrashSaveTargetFolder = targetFolder;
         return this;
     }
@@ -229,7 +229,7 @@ public class CCGCrashHandler implements Thread.UncaughtExceptionHandler {
                 Environment.MEDIA_MOUNTED)) {
             try {
                 File dir;
-                if (CCGStringUtils.isEmpty(mCrashSaveTargetFolder)) {
+                if (StringUtils.isEmpty(mCrashSaveTargetFolder)) {
                     dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "crash");
                 } else {
                     dir = new File(mCrashSaveTargetFolder);

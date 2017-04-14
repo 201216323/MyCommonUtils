@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
  * Description:密码工具类
  */
 
-public class CCGPasswordUtils {
+public class PasswordUtils {
 
     /**
      * 字符串md5
@@ -234,7 +234,7 @@ public class CCGPasswordUtils {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            CCGFileUtils.closeIO(in);
+            FileUtils.closeIO(in);
         }
         return null;
     }

@@ -9,7 +9,7 @@ import android.util.AttributeSet;
  * 描述：
  * </br>
  */
-public class CCGCircleImageView extends CCGAbsRoundImageView {
+public class CCGCircleImageView extends BaseRoundImageView {
 
 
     public CCGCircleImageView(Context context) {

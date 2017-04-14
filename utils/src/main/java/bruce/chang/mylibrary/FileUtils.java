@@ -37,7 +37,7 @@ import bruce.chang.mylibrary.service.DownloadService;
  * Description: 文件操作工具类
  */
 
-public class CCGFileUtils {
+public class FileUtils {
 
     public static final double KB = 1024.0;
     public static final double MB = KB * KB;
@@ -354,7 +354,7 @@ public class CCGFileUtils {
      * @return
      */
     public static String getFileName(String filePath) {
-        if (CCGStringUtils.isEmpty(filePath)) {
+        if (StringUtils.isEmpty(filePath)) {
             return filePath;
         }
 

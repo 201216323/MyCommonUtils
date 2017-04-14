@@ -24,7 +24,7 @@ import java.util.List;
  * Function: 获取手机应用信息
  */
 
-public class CCGApkUtils {
+public class ApkUtils {
 
     /**
      * 获取应用名称
@@ -222,7 +222,7 @@ public class CCGApkUtils {
                     if (PackageManager.PERMISSION_GRANTED == packageManager.checkPermission(permission, context.getPackageName())) {
                         return true;
                     }
-                    Log.d("CCGApkUtils", "Have you  declared permission " + permission + " in AndroidManifest.xml ?");
+                    Log.d("ApkUtils", "Have you  declared permission " + permission + " in AndroidManifest.xml ?");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -390,7 +390,7 @@ public class CCGApkUtils {
      * @param context
      */
     public static void cleanCache(Context context) {
-        CCGFileUtils.deleteFileByDirectory(context.getCacheDir());
+        FileUtils.deleteFileByDirectory(context.getCacheDir());
     }
 
     /**
@@ -400,7 +400,7 @@ public class CCGApkUtils {
      */
     public static void cleanDatabases(Context context) {
         String filepath = String.format(String.format(context.getFilesDir().getParent() + File.separator + "%s", "databases"));
-        CCGFileUtils.deleteFileByDirectory(new File(filepath));
+        FileUtils.deleteFileByDirectory(new File(filepath));
     }
 
     /**
@@ -410,7 +410,7 @@ public class CCGApkUtils {
      */
     public static void cleanSharedPreference(Context context) {
         String filepath = String.format(String.format(context.getFilesDir().getParent() + File.separator + "%s", "shared_prefs"));
-        CCGFileUtils.deleteFileByDirectory(new File(filepath));
+        FileUtils.deleteFileByDirectory(new File(filepath));
     }
 
     /**

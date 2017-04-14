@@ -27,8 +27,8 @@ import javax.xml.transform.stream.StreamSource;
  * 如下：[(MainActivity.java:16)#OnCreate ]   日志信息
  */
 
-public class CCGLogUtils {
-    private static String TAG = "CCGLogUtils";
+public class LogUtils {
+    private static String TAG = "LogUtils";
     private static boolean LOG_DEBUG = true;
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 

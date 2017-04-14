@@ -23,11 +23,11 @@ import java.util.Stack;
  * Description: 应用程序Activity管理类，用于Activity管理和应用程序的退出
  */
 
-public class CCGActivityManagerUtils {
+public class ActivityManagerUtils {
     private static Stack<Activity> activityStack;
-    private static CCGActivityManagerUtils activityManager;
+    private static ActivityManagerUtils activityManager;
 
-    private CCGActivityManagerUtils() {
+    private ActivityManagerUtils() {
     }
 
 
@@ -36,11 +36,11 @@ public class CCGActivityManagerUtils {
      *
      * @return
      */
-    public static CCGActivityManagerUtils getActivityManager() {
+    public static ActivityManagerUtils getActivityManager() {
         if (activityManager == null) {
-            synchronized (CCGActivityManagerUtils.class) {
+            synchronized (ActivityManagerUtils.class) {
                 if (activityManager == null) {
-                    activityManager = new CCGActivityManagerUtils();
+                    activityManager = new ActivityManagerUtils();
                 }
             }
         }

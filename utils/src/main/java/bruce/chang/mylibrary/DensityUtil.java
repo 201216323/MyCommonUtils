@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
  * Description:  屏幕工具类
  */
 
-public class CCGDensityUtil {
+public class DensityUtil {
 
     /**
      * dp转像素

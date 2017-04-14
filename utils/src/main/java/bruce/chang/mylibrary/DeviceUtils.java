@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  * Description:设备信息工具
  */
 
-public class CCGDeviceUtils {
+public class DeviceUtils {
 
 
     /**
@@ -132,13 +132,13 @@ public class CCGDeviceUtils {
     public static String getAndroidID(Context ctx) {
         String udid = Settings.Secure.getString(ctx.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        if (CCGStringUtils.isEmpty(udid) || udid.equals("9774d56d682e549c")
+        if (StringUtils.isEmpty(udid) || udid.equals("9774d56d682e549c")
                 || udid.length() < 15) {
             SecureRandom random = new SecureRandom();
             udid = new BigInteger(64, random).toString(16);
         }
 
-        if (CCGStringUtils.isEmpty(udid)) {
+        if (StringUtils.isEmpty(udid)) {
             udid = "";
         }
 

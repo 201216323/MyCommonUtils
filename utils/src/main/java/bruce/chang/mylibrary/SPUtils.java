@@ -12,12 +12,12 @@ import android.content.SharedPreferences;
  * Description:
  */
 
-public class CCGSPUtils {
+public class SPUtils {
     private final static String TAG = "SharedPreferencesHelper";
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
-    public CCGSPUtils(Context context) {
+    public SPUtils(Context context) {
         prefs = context.getSharedPreferences(TAG, Context.MODE_PRIVATE);
         editor = prefs.edit();
     }

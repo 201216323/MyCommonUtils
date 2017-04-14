@@ -185,7 +185,7 @@ public class ImageUtils {
      */
     public static boolean bitmap2gallery(Context context, Bitmap bitmap, String filename) {
         boolean saveSuccess;
-        String extraPath = CCGFileUtils.getExtraPath("19code");
+        String extraPath = FileUtils.getExtraPath("19code");
         File file = new File(extraPath, filename);
         try {
             FileOutputStream outputStream = new FileOutputStream(file);

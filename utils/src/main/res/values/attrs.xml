@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="CCGAbsRoundImageView">
+    <declare-styleable name="BaseRoundImageView">
         <attr name="riv_borderWidth" format="dimension|reference"/>
         <attr name="riv_borderColor" format="color|reference"/>
     </declare-styleable>
